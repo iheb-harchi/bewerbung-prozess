@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.mycompany</groupId>
+    <artifactId>bewerbung-app</artifactId>
+    <version>0.1-SNAPSHOT</version>
+    <packaging>war</packaging>
+
+    <name>bewerbung-app</name>
+    <description>Simple Jakarta EE application with JAXB generation.</description>
+
+    <properties>
+        <configuration-schemaDirectory>src/main/resources/xsd</configuration-schemaDirectory>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.report.sourceEncoding>UTF-8</project.report.sourceEncoding>
+        <maven.compiler.release>17</maven.compiler.release>
+        <jakartaee-api.version>10.0.0</jakartaee-api.version>
+        <wildfly.version>35.0.1.Final</wildfly.version>
+        <compiler-plugin.version>3.13.0</compiler-plugin.version>
+        <war-plugin.version>3.4.0</war-plugin.version>
+        <wildfly-plugin.version>5.0.1.Final</wildfly-plugin.version>
+            <jooq.version>3.18.7</jooq.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>jakarta.platform</groupId>
+            <artifactId>jakarta.jakartaee-api</artifactId>
+            <version>${jakartaee-api.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+           <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-xjc</artifactId>
+            <version>4.0.2</version>
+        </dependency>
+        <!-- Für Java 8 Time Support -->
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>4.0.2</version>
+        </dependency>
+        <dependency>
+    <groupId>org.mapstruct</groupId>
+    <artifactId>mapstruct</artifactId>
+    <version>1.5.5.Final</version>
+</dependency>
+<dependency>
+    <groupId>org.mapstruct</groupId>
+    <artifactId>mapstruct-processor</artifactId>
+    <version>1.5.5.Final</version>
+    <scope>provided</scope>
+</dependency>
+  <!-- jOOQ Core -->
+    <dependency>
+        <groupId>org.jooq</groupId>
+        <artifactId>jooq</artifactId>
+        <version>${jooq.version}</version>
+    </dependency>
+    
+    <!-- jOOQ Meta-Extensions (für type-safe SQL) -->
+    <dependency>
+        <groupId>org.jooq</groupId>
+        <artifactId>jooq-meta-extensions</artifactId>
+        <version>${jooq.version}</version>
+    </dependency>
+    <dependency>
+    <groupId>com.oracle.database.jdbc</groupId>
+    <artifactId>ojdbc8</artifactId>
+    <version>19.8.0.0</version>
+</dependency>
+<dependency>
+    <groupId>org.hibernate</groupId>
+    <artifactId>hibernate-core</artifactId>
+    <version>6.4.4.Final</version> <!-- Achte darauf, die passende Version zu verwenden -->
+</dependency>
+<dependency>
+    <groupId>org.hibernate.orm</groupId>
+    <artifactId>hibernate-community-dialects</artifactId>
+    <version>6.6.11.Final</version>
+</dependency>
+<dependency>
+    <groupId>org.flywaydb</groupId>
+    <artifactId>flyway-core</artifactId>
+    <version>9.22.3</version> <!-- oder aktuelle Version -->
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-api</artifactId>
+    <version>2.0.16</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
+<dependency>
+    <groupId>ch.qos.logback</groupId>
+    <artifactId>logback-classic</artifactId>
+    <version>1.5.16</version>
+    <scope>compile</scope>
+</dependency>
+    </dependencies>
+
+    <build>
+        <finalName>bewerbung-app</finalName>
+        <plugins>
+            <!-- Compiler plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${compiler-plugin.version}</version>
+                <configuration>
+                    <release>${maven.compiler.release}</release>
+                </configuration>
+            </plugin>
+
+            <!-- WAR plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>${war-plugin.version}</version>
+            </plugin>
+
+            <!-- WildFly plugin -->
+            <plugin>
+                <groupId>org.wildfly.plugins</groupId>
+                <artifactId>wildfly-maven-plugin</artifactId>
+                <version>${wildfly-plugin.version}</version>
+                <configuration>
+                    <version>${wildfly.version}</version>
+                    <server-config>standalone-full.xml</server-config>
+                </configuration>
+            </plugin>
+
+            <!-- JAXB Code Generation -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jaxb2-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>xjc-generate</id>
+                        <goals>
+                            <goal>xjc</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <sources>
+                        <source>src/main/resources/xsd/bewerbung.xsd</source>
+                        <source>src/main/resources/xsd/bewerber.xsd</source>
+                        <source>src/main/resources/xsd/job.xsd</source>
+                                            <source>src/main/resources/xsd/bewerbungFilter.xsd</source>
+
+                    </sources>
+                    <xjbSources>
+          				<xjbSource>src/main/resources/xsd/binding.xjb</xjbSource>
+        			</xjbSources>
+                    <outputDirectory>${project.build.directory}/generated-sources/jaxb/dtos</outputDirectory>
+                    <clearOutputDir>true</clearOutputDir>
+                </configuration>
+            </plugin>
+
+            <!-- Add generated sources to compilation -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/generated-sources/jaxb/dtos</source>
+                                <source>${project.build.directory}/generated-sources/jooq</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            
+             <plugin>
+      <groupId>org.jooq</groupId>
+    <artifactId>jooq-codegen-maven</artifactId> 
+      <version>${jooq.version}</version>
+      <configuration>
+       <jdbc>
+            <driver>oracle.jdbc.OracleDriver</driver>
+            <url>jdbc:oracle:thin:@localhost:1521/XEPDB1</url>
+            <user>sa</user>
+            <password>sa</password>
+        </jdbc>
+        <generator>
+            <name>org.jooq.codegen.JavaGenerator</name>
+        <database>
+           <name>org.jooq.meta.jdbc.JDBCDatabase</name>
+          <inputSchema>SA</inputSchema> 
+        </database>
+        
+         <target>
+          <packageName>com.mycompany.jooq.generated</packageName> <!-- Paketname für generierte Klassen -->
+          <directory>target/generated-sources/jooq</directory>
+        </target>
+        <generate>
+        <!--  <pojos>false</pojos> Keine POJOs für Entitäten generieren -->
+          <fluentSetters>false</fluentSetters> <!-- Keine fluent Setter generieren -->
+        </generate>
+        </generator>
+      </configuration>
+    </plugin>
+        </plugins>
+    </build>
+</project>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.mycompany.com/bewerber"
+           xmlns="http://www.mycompany.com/bewerber"
+           elementFormDefault="qualified">
+
+    <!-- Root Element -->
+    <xs:element name="bewerber" type="BewerberDTO"/>
+
+    <!-- Bewerber DTO -->
+    <xs:complexType name="BewerberDTO">
+        <xs:sequence>
+            <xs:element name="id" type="xs:long"/>
+            <xs:element name="vorname" type="xs:string"/>
+            <xs:element name="nachname" type="xs:string"/>
+            <xs:element name="geburtsdatum" type="xs:date"/>
+            <xs:element name="email">
+    			<xs:simpleType>
+        			<xs:restriction base="xs:string">
+            			<xs:maxLength value="255"/>
+            			<xs:pattern value="[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+"/>
+        			</xs:restriction>
+    			</xs:simpleType>
+			</xs:element>
+            <xs:element name="telefon" type="xs:string" minOccurs="0">
+    			<xs:annotation>
+        			<xs:documentation>Optionales Telefonfeld</xs:documentation>
+    			</xs:annotation>
+			</xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>

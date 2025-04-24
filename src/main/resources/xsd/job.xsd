@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.mycompany.com/job"
+           xmlns="http://www.mycompany.com/job"
+           elementFormDefault="qualified">
+
+    <!-- Root Element -->
+    <xs:element name="job" type="JobDTO"/>
+
+    <!-- Job Typ -->
+    <xs:complexType name="JobDTO">
+        <xs:sequence>
+            <xs:element name="id" type="xs:long"/>
+            <xs:element name="titel" type="xs:string"/>
+            <xs:element name="beschreibung" type="xs:string"/>
+            <xs:element name="status" type="JobStatus"/>
+            <xs:element name="gueltigAb" type="xs:date"/>  
+            <xs:element name="gueltigBis" type="xs:date"/> 
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- JobStatus Enum -->
+    <xs:simpleType name="JobStatus">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="OFFEN"/>
+            <xs:enumeration value="BESETZT"/>
+            <xs:enumeration value="GESCHLOSSEN"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>

@@ -1,0 +1,18 @@
+<configuration>
+    <!-- Konsolen-Logging für alle SLF4J Logs -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Root Logger für alle Logs -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+    <!-- Flyway Logger auf DEBUG setzen -->
+    <logger name="org.flywaydb.core" level="DEBUG">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+</configuration>

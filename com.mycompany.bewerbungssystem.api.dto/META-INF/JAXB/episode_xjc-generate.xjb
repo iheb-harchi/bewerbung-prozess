@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<bindings version="3.0" xmlns="https://jakarta.ee/xml/ns/jaxb">
+  <!--
+
+Diese Datei wurde mit der Eclipse Implementation of JAXB, v3.0.0 generiert 
+Siehe https://eclipse-ee4j.github.io/jaxb-ri 
+Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
+Generiert: 2025.04.23 um 11:57:45 AM CEST 
+
+  -->
+  <bindings scd="x-schema::tns" xmlns:tns="http://www.mycompany.com/bewerber">
+    <schemaBindings map="false">
+      <package name="com.mycompany.bewerber"/>
+    </schemaBindings>
+    <bindings scd="~tns:BewerberType">
+      <class ref="com.mycompany.bewerber.BewerberType"/>
+    </bindings>
+  </bindings>
+  <bindings scd="x-schema::tns" xmlns:tns="http://www.mycompany.com/bewerbung">
+    <schemaBindings map="false">
+      <package name="com.mycompany.bewerbung"/>
+    </schemaBindings>
+    <bindings scd="~tns:BewerbungType">
+      <class ref="com.mycompany.bewerbung.BewerbungType"/>
+    </bindings>
+    <bindings scd="~tns:StatusType">
+      <typesafeEnumClass ref="com.mycompany.bewerbung.StatusType"/>
+    </bindings>
+  </bindings>
+  <bindings scd="x-schema::tns" xmlns:tns="http://www.mycompany.com/job">
+    <schemaBindings map="false">
+      <package name="com.mycompany.job"/>
+    </schemaBindings>
+    <bindings scd="~tns:JobType">
+      <class ref="com.mycompany.job.JobType"/>
+    </bindings>
+    <bindings scd="~tns:JobStatusType">
+      <typesafeEnumClass ref="com.mycompany.job.JobStatusType"/>
+    </bindings>
+  </bindings>
+</bindings>
+

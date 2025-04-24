@@ -1,0 +1,2 @@
+ALTER TABLE Bewerber
+ADD COLUMN Adresse VARCHAR(255);

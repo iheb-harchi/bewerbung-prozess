@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.mycompany.org/bewerbung"
+           xmlns="http://www.mycompany.org/bewerbung"
+           elementFormDefault="qualified">
+  
+   <!-- Root Element -->
+    <xs:element name="bewerbungFilter" type="BewerbungFilter"/>
+    <xs:complexType name="BewerbungFilter">
+        <xs:sequence>
+            <xs:element name="bewerbungId" type="xs:long" minOccurs="0" />
+            <xs:element name="jobId" type="xs:long" minOccurs="0" />
+            <xs:element name="status" type="xs:string" minOccurs="0" />
+            <xs:element name="anschreiben" type="xs:string" minOccurs="0" />
+            <xs:element name="eingereichtVon" type="xs:date" minOccurs="0" />
+            <xs:element name="eingereichtBis" type="xs:date" minOccurs="0" />
+        </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>
