@@ -20,6 +20,7 @@ public class BewerbungHistoryRepository {
 	@Transactional
 	public void save(BewerbungHistoryEntity historyEntity) {
 		entityManager.persist(historyEntity);
+		entityManager.flush();
 	}
 
 	public List<BewerbungHistoryEntity> findByBewerbungId(Long bewerbungId) {

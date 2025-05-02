@@ -27,7 +27,7 @@ public class HelloWorldResource {
 
 		@GET
 		public List<BewerbungEntity> getAll() {
-			return repository.filterBewerbungen();
+			return repository.findAll();
 		}
 
 		@GET
@@ -38,7 +38,7 @@ public class HelloWorldResource {
 
 		@POST
 		public Response create(BewerbungEntity bewerbung) {
-			BewerbungEntity saved = repository.save(bewerbung);
+			BewerbungEntity saved = repository.persistAndFlush(bewerbung);
 			return Response.status(Response.Status.CREATED).entity(saved).build();
 		}
 

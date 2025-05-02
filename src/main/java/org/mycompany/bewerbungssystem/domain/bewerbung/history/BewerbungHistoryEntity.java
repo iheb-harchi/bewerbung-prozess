@@ -2,7 +2,7 @@ package org.mycompany.bewerbungssystem.domain.bewerbung.history;
 
 import java.time.LocalDateTime;
 
-import com.mycompany.bewerbung.BewerbungStatus;
+import org.mycompany.common.BewerbungStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

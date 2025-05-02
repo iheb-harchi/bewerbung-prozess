@@ -1,11 +1,17 @@
 package org.mycompany.bewerbungssystem.domain.bewerber;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.mycompany.bewerbungssystem.domain.bewerbung.BewerbungEntity;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
 
@@ -35,6 +41,9 @@ public class BewerberEntity {
 
 	@Size(max = 20, message = "Die Telefonnummer darf maximal 20 Zeichen lang sein.")
 	private String telefon;
+
+	@OneToMany(mappedBy = "bewerber", cascade = CascadeType.REMOVE, orphanRemoval = true)
+	private List<BewerbungEntity> bewerbungen = new ArrayList<>();
 
 
 	public long getId() {

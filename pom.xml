@@ -155,14 +155,10 @@
                 </executions>
                 <configuration>
                     <sources>
-                        <source>src/main/resources/xsd/bewerbung.xsd</source>
-                        <source>src/main/resources/xsd/bewerber.xsd</source>
-                        <source>src/main/resources/xsd/job.xsd</source>
-                                            <source>src/main/resources/xsd/bewerbungFilter.xsd</source>
-
+                        <source>src/main/resources/xsd/</source>
                     </sources>
                     <xjbSources>
-          				<xjbSource>src/main/resources/xsd/binding.xjb</xjbSource>
+          				<xjbSource>src/main/resources/binding/binding.xjb</xjbSource>
         			</xjbSources>
                     <outputDirectory>${project.build.directory}/generated-sources/jaxb/dtos</outputDirectory>
                     <clearOutputDir>true</clearOutputDir>
@@ -192,34 +188,64 @@
             </plugin>
             
              <plugin>
-      <groupId>org.jooq</groupId>
-    <artifactId>jooq-codegen-maven</artifactId> 
-      <version>${jooq.version}</version>
-      <configuration>
-       <jdbc>
-            <driver>oracle.jdbc.OracleDriver</driver>
-            <url>jdbc:oracle:thin:@localhost:1521/XEPDB1</url>
-            <user>sa</user>
-            <password>sa</password>
-        </jdbc>
-        <generator>
-            <name>org.jooq.codegen.JavaGenerator</name>
-        <database>
-           <name>org.jooq.meta.jdbc.JDBCDatabase</name>
-          <inputSchema>SA</inputSchema> 
-        </database>
+      			<groupId>org.jooq</groupId>
+   				<artifactId>jooq-codegen-maven</artifactId> 
+      			<version>${jooq.version}</version>
+      			<executions>
+        			<execution>
+            		<id>generate-jooq-sources</id>
+           			 <phase>generate-sources</phase> <!-- Dieser Block stellt sicher, dass der Code-Generator in der richtigen Build-Phase ausgeführt wird -->
+           			 <goals>
+                			<goal>generate</goal> <!-- Das tatsächliche Ziel für die Code-Generierung -->
+            		</goals>
+        			</execution>
+    			</executions>
+      			<configuration>
+       				<jdbc>
+            			<driver>oracle.jdbc.OracleDriver</driver>
+            			<url>jdbc:oracle:thin:@localhost:1521/XEPDB1</url>
+            			<user>sa</user>
+            			<password>sa</password>
+        			</jdbc>
+        			<generator>
+           				 <name>org.jooq.codegen.JavaGenerator</name>
+        				<database>
+           					<name>org.jooq.meta.jdbc.JDBCDatabase</name>
+         			 		<inputSchema>SA</inputSchema> 
+         			 		<includes>.*</includes>
+                <excludes></excludes>
+         			 		<forcedTypes>
+    <!-- Für ID-Spalten als Long -->
+    <forcedType>
+        <userType>java.lang.Long</userType>
+        <binding>org.jooq.impl.DefaultBinding</binding>
+        <includeExpression>.*\.(ID|Id|id)$</includeExpression>
+        <sqlType>NUMBER</sqlType>
+    </forcedType>
+    
+    <!-- Für String-Spalten -->
+    <forcedType>
+        <userType>java.lang.String</userType>
+        <binding>org.jooq.impl.DefaultBinding</binding>
+        <sqlType>VARCHAR2|CHAR|VARCHAR|CLOB</sqlType>
+    </forcedType>
+</forcedTypes>
+        				</database>
         
-         <target>
-          <packageName>com.mycompany.jooq.generated</packageName> <!-- Paketname für generierte Klassen -->
-          <directory>target/generated-sources/jooq</directory>
-        </target>
-        <generate>
-        <!--  <pojos>false</pojos> Keine POJOs für Entitäten generieren -->
-          <fluentSetters>false</fluentSetters> <!-- Keine fluent Setter generieren -->
-        </generate>
-        </generator>
-      </configuration>
-    </plugin>
+         				<target>
+          					<directory>target/generated-sources/jooq</directory>
+        				</target>
+       					 <generate>
+       					  <deprecated>false</deprecated>
+       <pojos>false</pojos>
+         			 		<fluentSetters>false</fluentSetters> <!-- Keine fluent Setter generieren -->
+         			 		<deprecated>false</deprecated>
+    <deprecationOnUnknownTypes>false</deprecationOnUnknownTypes>
+    <instanceFields>true</instanceFields>
+       					 </generate>
+        			</generator>
+      			</configuration>
+    		</plugin>
         </plugins>
     </build>
 </project>

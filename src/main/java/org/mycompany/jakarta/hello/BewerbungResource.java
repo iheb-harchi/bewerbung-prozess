@@ -7,6 +7,7 @@ import org.mycompany.bewerbung.BewerbungFilter;
 import org.mycompany.bewerbungssystem.domain.bewerbung.BewerbungEntity;
 import org.mycompany.bewerbungssystem.infrastructure.persistence.repository.BewerbungRepository;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.Consumes;
@@ -22,6 +23,7 @@ import jakarta.ws.rs.core.Response;
 @ApplicationPath("/api") // Definiert den Basispfad
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@ApplicationScoped
 public class BewerbungResource extends Application {
 
     @Inject
@@ -43,7 +45,7 @@ public class BewerbungResource extends Application {
 
     @POST
     public Response create(BewerbungEntity bewerbung) {
-        BewerbungEntity saved = repository.save(bewerbung);
+		BewerbungEntity saved = repository.persistAndFlush(bewerbung);
         return Response.status(Response.Status.CREATED).entity(saved).build();
     }
 

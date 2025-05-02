@@ -18,7 +18,6 @@
     			<xs:simpleType>
         			<xs:restriction base="xs:string">
             			<xs:maxLength value="255"/>
-            			<xs:pattern value="[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+"/>
         			</xs:restriction>
     			</xs:simpleType>
 			</xs:element>

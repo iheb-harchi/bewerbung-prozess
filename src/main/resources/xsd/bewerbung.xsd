@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:common="http://www.mycompany.org/common"
            targetNamespace="http://www.mycompany.com/bewerbung"
            xmlns="http://www.mycompany.com/bewerbung"
            xmlns:tns="http://www.mycompany.com/bewerbung"
            elementFormDefault="qualified">
-
+            
+<xs:import namespace="http://www.mycompany.org/common" schemaLocation="bewerbungStatus.xsd"/>
     <!-- Root Element -->
     <xs:element name="bewerbung" type="tns:BewerbungDTO"/>
 
@@ -14,20 +16,17 @@
             <xs:element name="id" type="xs:long" minOccurs="0"/>
             <xs:element name="bewerberId" type="xs:long"/>
             <xs:element name="jobId" type="xs:long"/>
-            <xs:element name="anschreiben" type="xs:string"/>
+            <xs:element name="anschreiben">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:minLength value="4"/>
+                        <xs:maxLength value="20"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
             <xs:element name="eingereichtAm" type="xs:date" minOccurs="0"/>
-            <xs:element name="status" type="tns:BewerbungStatus" minOccurs="0"/>
+            <xs:element name="status" type="common:BewerbungStatus" minOccurs="0"/>
         </xs:sequence>
     </xs:complexType>
-
-    <!-- Status Aufzählung -->
-    <xs:simpleType name="BewerbungStatus">
-        <xs:restriction base="xs:string">
-            <xs:enumeration value="EINGEREICHT"/>
-            <xs:enumeration value="GEPRUEFT"/>
-            <xs:enumeration value="ANGENOMMEN"/>
-            <xs:enumeration value="ABGELEHNT"/>
-        </xs:restriction>
-    </xs:simpleType>
 
 </xs:schema>

@@ -11,6 +11,7 @@ public class InvalidBewerbungException extends Exception {
 
 	private InvalidBewerbungFault faultInfo;
 
+
     public InvalidBewerbungException(String message) {
         super(message);
         this.faultInfo = new InvalidBewerbungFault(message);
@@ -33,5 +34,9 @@ class InvalidBewerbungFault {
 	public InvalidBewerbungFault(String errorMessage) {
 		this.errorMessage = errorMessage;
     }
+
+	public InvalidBewerbungFault() {
+		this.errorMessage = errorMessage;
+	}
     
 }

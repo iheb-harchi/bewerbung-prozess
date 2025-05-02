@@ -1,78 +1,98 @@
 package org.mycompany.bewerbungssystem.application.service;
 
-import java.net.URL;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import org.mycompany.bewerbung.BewerbungFilter;
 import org.mycompany.bewerbungssystem.api.exception.InvalidBewerbungException;
 import org.mycompany.bewerbungssystem.api.exception.ResourceNotFoundException;
 import org.mycompany.bewerbungssystem.application.mapper.BewerbungMapper;
-import org.mycompany.bewerbungssystem.application.validation.AbstractXsdValidator;
 import org.mycompany.bewerbungssystem.domain.bewerbung.BewerbungEntity;
 import org.mycompany.bewerbungssystem.infrastructure.persistence.repository.BewerbungRepository;
+import org.mycompany.common.BewerbungStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.mycompany.bewerbung.BewerbungDTO;
-import com.mycompany.bewerbung.BewerbungStatus;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class BewerbungService {
 
-	@Inject
-	private BewerbungRepository bewerbungRepository;
+	private static final Logger LOG = LoggerFactory.getLogger(BewerbungService.class);
 
 	@Inject
-	private BewerbungMapper bewerbungMapper;
+	BewerbungRepository bewerbungRepository;
 
 	@Inject
-	private BewerbungHistoryService bewerbungHistoryService;
+	BewerbungHistoryService historyService;
 
-	public BewerbungDTO bewerbungAnlegen(BewerbungDTO bewerbungDTO) throws InvalidBewerbungException {
+	@Inject
+	BewerbungMapper bewerbungMapper;
+
+	@Inject
+	BewerbungHistoryService bewerbungHistoryService;
+
+	@Transactional
+	public BewerbungDTO createBewerbung(BewerbungDTO bewerbungDTO) throws InvalidBewerbungException {
+		BewerbungEntity entity = bewerbungMapper.toEntity(bewerbungDTO);
+		entity = persistBewerbung(entity);
+
+		LOG.info("Created new application with ID: {}", entity.getId());
+		return bewerbungMapper.toDTO(entity);
+	}
+
+	private BewerbungEntity persistBewerbung(BewerbungEntity entity) {
 		try {
-
-			URL xsdUrl = getClass().getClassLoader().getResource("xsd/bewerbung.xsd");
-
-			if (xsdUrl == null) {
-				throw new InvalidBewerbungException("XSD-Datei nicht gefunden");
-			}
-
-			// Konvertiere die URL zu einem String (Pfad)
-			String xsdPath = xsdUrl.getPath();
-			// XSD Validierung der BewerbungDTO
-			if (!AbstractXsdValidator.validateDto(bewerbungDTO, BewerbungDTO.class,
-					xsdPath)) {
-				throw new InvalidBewerbungException("Bewerbung entspricht nicht dem XSD-Schema");
-			}
-			BewerbungEntity bewerbungEntity = bewerbungMapper.toEntity(bewerbungDTO);
-
-			bewerbungEntity = bewerbungRepository.save(bewerbungEntity);
-
-			return bewerbungMapper.toDTO(bewerbungEntity);
+			return bewerbungRepository.persistAndFlush(entity);
 		} catch (Exception e) {
-			throw new RuntimeException("Fehler beim Anlegen der Bewerbung", e);
+			LOG.error("Failed to persist application", e);
+			throw new IllegalStateException("Failed to save application", e);
 		}
 	}
 
-	public BewerbungDTO bewerbungEinsehen(Long id) {
-		BewerbungEntity bewerbungEntity = bewerbungRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Bewerbung nicht gefunden"));
-		return bewerbungMapper.toDTO(bewerbungEntity);
+	@Transactional
+	public BewerbungDTO getBewerbung(Long id) {
+		return bewerbungRepository.findById(id).map(bewerbungMapper::toDTO).orElseThrow(
+				() -> new ResourceNotFoundException(String.format("Application with ID %d not found", id)));
 	}
 
-	public void bewerbungLoeschen(Long id) {
-		BewerbungEntity bewerbungEntity = bewerbungRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Bewerbung nicht gefunden"));
-		bewerbungRepository.delete(bewerbungEntity);
+	public List<BewerbungDTO> getAllBewerbungen() {
+		return bewerbungRepository.findAll().stream().map(bewerbungMapper::toDTO).collect(Collectors.toList());
 	}
 
-	public void statusAendern(Long id, BewerbungStatus neuerStatus) {
-		BewerbungEntity bewerbungEntity = bewerbungRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("Bewerbung nicht gefunden"));
-		BewerbungStatus alterStatus = bewerbungEntity.getStatus();
-		bewerbungEntity.setStatus(neuerStatus);
-		bewerbungRepository.save(bewerbungEntity);
-		bewerbungHistoryService.saveBewerbungHistory(bewerbungEntity, alterStatus, neuerStatus, false);
+	@Transactional
+	public void deleteBewerbung(Long id) {
+		bewerbungRepository.deleteById(id);
+		LOG.info("Deleted application with ID: {}", id);
+	}
 
+	@Transactional
+	public void updateStatus(Long id, BewerbungStatus newStatus) {
+		BewerbungEntity entity = bewerbungRepository.findById(id)
+				.orElseThrow(
+				() -> new ResourceNotFoundException(String.format("Bewerbung with ID %d not found", id)));
+
+		BewerbungStatus oldStatus = entity.getStatus();
+		if (oldStatus.equals(newStatus)) {
+			LOG.info("Status hasn't been changed  for the status Bewerbung ID {}: {} -> {}", id, oldStatus, newStatus);
+		} else {
+			entity.setStatus(newStatus);
+
+			bewerbungRepository.persistAndFlush(entity);
+			historyService.saveBewerbungHistory(id, newStatus, oldStatus, false);
+			LOG.info("Updated status for Bewerbung ID {}: {} -> {}", id, oldStatus, newStatus);
+		}
+
+	}
+
+	public List<BewerbungDTO> filterBewerbungen(BewerbungFilter bewerbungFilter) {
+
+		return bewerbungRepository.filterBewerbungen(bewerbungFilter).stream().map(bewerbungMapper::toDTO)
+				.collect(Collectors.toList());
 	}
 
 }

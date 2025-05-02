@@ -4,8 +4,7 @@ import java.time.LocalDateTime;
 
 import org.mycompany.bewerbungssystem.domain.bewerber.BewerberEntity;
 import org.mycompany.bewerbungssystem.domain.job.JobEntity;
-
-import com.mycompany.bewerbung.BewerbungStatus;
+import org.mycompany.common.BewerbungStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,19 +15,20 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "BEWERBUNG")
+@SequenceGenerator(name = "bewerbungSeq", sequenceName = "BEWERBUNG_SEQ", allocationSize = 1)
 public class BewerbungEntity {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bewerbungSeq")
 	private Long id;
 
 //	@NotNull(message = "Anschreiben darf nicht null sein.")
-	@Size(min = 50, max = 1000, message = "Das Anschreiben muss zwischen 50 und 1000 Zeichen lang sein.")
+//	@Size(min = 50, max = 1000, message = "Das Anschreiben muss zwischen 50 und 1000 Zeichen lang sein.")
 	private String anschreiben;
 
 	@Column(name = "EINGEREICHT_AM")
@@ -79,6 +79,22 @@ public class BewerbungEntity {
 
 	public void setStatus(BewerbungStatus status) {
 		this.status = status;
+	}
+
+	public void setBewerber(BewerberEntity bewerber) {
+		this.bewerber = bewerber;
+	}
+
+	public BewerberEntity getBewerber() {
+		return bewerber;
+	}
+
+	public void setJob(JobEntity job) {
+		this.job = job;
+	}
+
+	public JobEntity getJob() {
+		return job;
 	}
 
 }

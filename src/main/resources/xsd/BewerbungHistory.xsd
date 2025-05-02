@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:common="http://www.mycompany.org/common"
+           targetNamespace="http://www.mycompany.org/bewerbungssystem"
+           xmlns="http://www.mycompany.org/bewerbungssystem"
+           elementFormDefault="qualified">
+
+  <!-- Import shared types -->
+  <xs:import namespace="http://www.mycompany.org/common" schemaLocation="bewerbungStatus.xsd"/>
+
+  <xs:complexType name="BewerbungHistoryDTO">
+    <xs:sequence>
+      <xs:element name="id" type="xs:long" minOccurs="0"/>
+      <xs:element name="bewerbungId" type="xs:long"/>
+      <xs:element name="alterStatus" type="common:BewerbungStatus"/>
+      <xs:element name="neuerStatus" type="common:BewerbungStatus"/>
+      <xs:element name="geaendertAm" type="xs:dateTime"/>
+      <xs:element name="geaendertVon" type="xs:string" minOccurs="0"/>
+      <xs:element name="bewerberBenachrichtigt" type="xs:boolean"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="BewerbungHistoryDTO" type="BewerbungHistoryDTO"/>
+</xs:schema>
