@@ -212,36 +212,13 @@
         				<database>
            					<name>org.jooq.meta.jdbc.JDBCDatabase</name>
          			 		<inputSchema>SA</inputSchema> 
-         			 		<includes>.*</includes>
-                <excludes></excludes>
-         			 		<forcedTypes>
-    <!-- Für ID-Spalten als Long -->
-    <forcedType>
-        <userType>java.lang.Long</userType>
-        <binding>org.jooq.impl.DefaultBinding</binding>
-        <includeExpression>.*\.(ID|Id|id)$</includeExpression>
-        <sqlType>NUMBER</sqlType>
-    </forcedType>
-    
-    <!-- Für String-Spalten -->
-    <forcedType>
-        <userType>java.lang.String</userType>
-        <binding>org.jooq.impl.DefaultBinding</binding>
-        <sqlType>VARCHAR2|CHAR|VARCHAR|CLOB</sqlType>
-    </forcedType>
-</forcedTypes>
         				</database>
         
          				<target>
           					<directory>target/generated-sources/jooq</directory>
         				</target>
        					 <generate>
-       					  <deprecated>false</deprecated>
-       <pojos>false</pojos>
          			 		<fluentSetters>false</fluentSetters> <!-- Keine fluent Setter generieren -->
-         			 		<deprecated>false</deprecated>
-    <deprecationOnUnknownTypes>false</deprecationOnUnknownTypes>
-    <instanceFields>true</instanceFields>
        					 </generate>
         			</generator>
       			</configuration>
