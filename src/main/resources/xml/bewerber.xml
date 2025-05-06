@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bewerber xmlns="http://www.mycompany.com/bewerber">
+    <Id>1</Id>
+    <Vorname>Max</Vorname>
+    <Nachname>Mustermann</Nachname>
+    <Geburtsdatum>1990-01-01</Geburtsdatum>
+    <Email>max.mustermann@example.com</Email>
+    <Strasse>Beispielstraße</Strasse>
+    <HausNr>10</HausNr>
+    <PLZ>12345</PLZ>
+    <Land>DEUTSCHLAND</Land>
+    <Telefon>0123456789</Telefon>
+</bewerber>

@@ -22,7 +22,9 @@
         <compiler-plugin.version>3.13.0</compiler-plugin.version>
         <war-plugin.version>3.4.0</war-plugin.version>
         <wildfly-plugin.version>5.0.1.Final</wildfly-plugin.version>
-            <jooq.version>3.18.7</jooq.version>
+        <ph.schematron.version>6.2.1</ph.schematron.version>
+    	<saxon.version>10.6</saxon.version>
+        <jooq.version>3.18.7</jooq.version>
     </properties>
 
     <dependencies>
@@ -98,7 +100,18 @@
     <artifactId>slf4j-api</artifactId>
     <version>2.0.16</version>
 </dependency>
+<dependency>
+    <groupId>net.sf.saxon</groupId>
+    <artifactId>Saxon-HE</artifactId>
+    <version>12.4</version>
+</dependency>
 
+<!-- SchXslt Runtime (führt die Schematron-Validierung aus) -->
+<dependency>
+    <groupId>name.dmaus.schxslt</groupId>
+    <artifactId>schxslt</artifactId>
+    <version>1.10.1</version>
+</dependency>
 <!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
 <dependency>
     <groupId>ch.qos.logback</groupId>
@@ -106,6 +119,18 @@
     <version>1.5.16</version>
     <scope>compile</scope>
 </dependency>
+
+<dependency>
+    <groupId>com.helger</groupId>
+    <artifactId>ph-schematron</artifactId>
+    <version>5.6.5</version>
+</dependency>
+<dependency>
+    <groupId>com.helger.schematron</groupId>
+    <artifactId>ph-schematron-schxslt</artifactId>
+    <version>8.0.6</version>
+</dependency>
+
     </dependencies>
 
     <build>
@@ -223,6 +248,49 @@
         			</generator>
       			</configuration>
     		</plugin>
+<!-- Schematron Compilation -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>xml-maven-plugin</artifactId>
+        <version>1.0.2</version>
+        <executions>
+          <execution>
+            <id>compile-schematron</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>transform</goal>
+            </goals>
+            <configuration>
+              <transformationSets>
+              	<transformationSet>
+                <dir>src/main/resources/schematron</dir>
+                <includes>
+                  <include>*.sch</include>
+                </includes>
+                <stylesheet>src/main/resources/iso_schematron.xsl</stylesheet>
+                <outputDir>target/generated-sources/schematron</outputDir>
+             <fileMappers>
+                            <fileMapper implementation="org.codehaus.plexus.components.io.filemappers.RegExpFileMapper">
+                                <pattern>^(.*)\.sch$</pattern>
+                                <replacement>$1.xsl</replacement>
+                            </fileMapper>
+                        </fileMappers>
+                                           
+
+              </transformationSet>
+            </transformationSets>
+            </configuration>
+          </execution>
+        </executions>
+        <dependencies>
+        <dependency>
+            <groupId>net.sf.saxon</groupId>
+            <artifactId>Saxon-HE</artifactId>
+            <version>12.4</version>
+        </dependency>
+    </dependencies>
+      </plugin>
+
         </plugins>
     </build>
 </project>

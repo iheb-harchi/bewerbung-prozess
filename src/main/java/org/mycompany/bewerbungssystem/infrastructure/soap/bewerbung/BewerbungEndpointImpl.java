@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.mycompany.bewerbung.BewerbungFilter;
 import org.mycompany.bewerbungssystem.application.service.BewerbungService;
+import org.mycompany.bewerbungssystem.application.validation.ValidationResult;
 import org.mycompany.bewerbungssystem.application.validation.XsdValidator;
 import org.mycompany.common.BewerbungStatus;
 import org.slf4j.Logger;
@@ -34,7 +35,7 @@ public class BewerbungEndpointImpl implements BewerbungEndpointI {
 			LOG.info("Received new application submission");
 
 			// Step 1: XSD Validation
-			XsdValidator.ValidationResult validation = XsdValidator.validate(bewerbungDTO, BewerbungDTO.class,
+			ValidationResult validation = XsdValidator.validate(bewerbungDTO,
 					XSD_PATH);
 
 			if (!validation.isValid()) {

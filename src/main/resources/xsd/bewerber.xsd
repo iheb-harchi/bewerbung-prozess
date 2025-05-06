@@ -10,23 +10,56 @@
     <!-- Bewerber DTO -->
     <xs:complexType name="BewerberDTO">
         <xs:sequence>
-            <xs:element name="id" type="xs:long"/>
-            <xs:element name="vorname" type="xs:string"/>
-            <xs:element name="nachname" type="xs:string"/>
-            <xs:element name="geburtsdatum" type="xs:date"/>
-            <xs:element name="email">
-    			<xs:simpleType>
-        			<xs:restriction base="xs:string">
-            			<xs:maxLength value="255"/>
-        			</xs:restriction>
-    			</xs:simpleType>
-			</xs:element>
-            <xs:element name="telefon" type="xs:string" minOccurs="0">
+            <xs:element name="Id" type="xs:long" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="Vorname" type="TypName" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="Nachname" type="TypName" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="Geburtsdatum" type="xs:date" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="Email" type="EmailTyp" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="Strasse" type="StrTyp100" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="HausNr" type="xs:short" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="PLZ" type="PLZTyp" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="Land" type="LandTyp" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="Telefon" type="TelefonTyp" minOccurs="0">
     			<xs:annotation>
         			<xs:documentation>Optionales Telefonfeld</xs:documentation>
     			</xs:annotation>
 			</xs:element>
         </xs:sequence>
     </xs:complexType>
+    
+    <!--  spezifische Datentypen: lanegebegrenzte stringdatentypen -->
+    <xs:simpleType name="TypName">
+    	<xs:restriction base="xs:string">
+    		<xs:maxLength value="30"/>
+    	</xs:restriction>
+    </xs:simpleType>
+ 	 <xs:simpleType name="StrTyp100">
+    	<xs:restriction base="xs:string">
+    		<xs:maxLength value="100"/>
+    	</xs:restriction>
+    </xs:simpleType>
+ 	<xs:simpleType name="EmailTyp">
+        <xs:restriction base="xs:string">
+			<xs:pattern value="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="TelefonTyp">
+    <xs:restriction base="xs:string">
+        <xs:pattern value="[\d\s\-\+\(\)]{7,20}"/>
+    </xs:restriction>
+</xs:simpleType>
 
+<xs:simpleType name="PLZTyp">
+	<xs:restriction base="xs:string">
+		<xs:minLength value="5"/>
+		<xs:maxLength value="10"/>
+	</xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name="LandTyp">
+	<xs:restriction base="xs:string">
+		<xs:enumeration value="DEUTSCHLAND"/>
+		<xs:enumeration value="FRANKREICH"/>
+	</xs:restriction>
+</xs:simpleType>
 </xs:schema>
