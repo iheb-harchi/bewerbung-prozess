@@ -65,7 +65,7 @@ pipeline {
                         groupId: 'org.mycompany', // Anpassen!
                         version: VERSION,
                         repository: NEXUS_REPO,
-                        credentialsId: 'nexus-credentials',
+                        credentialsId: 'nexus',
                         artifacts: [
                             [
                                 artifactId: ARTIFACT_ID,
