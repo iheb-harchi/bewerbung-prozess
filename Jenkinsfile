@@ -5,7 +5,7 @@ pipeline {
         NEXUS_URL = 'http://localhost:8081'
         NEXUS_REPO = 'bewerbung-app'
         CREDENTIALS_ID = 'nexus'
-
+    }
     stages {
         // Stage 1: Version aus Maven auslesen
         stage('Read Version') {
