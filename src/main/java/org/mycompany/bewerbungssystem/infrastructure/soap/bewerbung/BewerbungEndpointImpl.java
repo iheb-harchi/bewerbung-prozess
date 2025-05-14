@@ -6,6 +6,7 @@ import org.mycompany.bewerbung.BewerbungFilter;
 import org.mycompany.bewerbungssystem.application.service.BewerbungService;
 import org.mycompany.bewerbungssystem.application.validation.ValidationResult;
 import org.mycompany.bewerbungssystem.application.validation.XsdValidator;
+import org.mycompany.bewerbungssystem.infrastructure.messaging.BewerbungMessageProducer;
 import org.mycompany.common.BewerbungStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,8 @@ public class BewerbungEndpointImpl implements BewerbungEndpointI {
 
 	@Inject
 	private BewerbungService bewerbungService;
+	@Inject
+	BewerbungMessageProducer messageProducer;
 
 	@Override
 	public SubmitBewerbungResponse submitBewerbung(BewerbungDTO bewerbungDTO) {
@@ -46,6 +49,11 @@ public class BewerbungEndpointImpl implements BewerbungEndpointI {
 			// Step 2: Business Processing
 			BewerbungDTO saved = bewerbungService.createBewerbung(bewerbungDTO);
 			LOG.info("Application submitted successfully, ID: {}", saved.getId());
+
+			// MQ Nachricht versenden
+			String messageBody = String.format("Neue Bewerbung eingereicht. ID: %d, BewerberId: %s, JobId: %s",
+					saved.getId(), saved.getBewerberId(), saved.getJobId());
+			messageProducer.send(messageBody);
 
 			return SubmitBewerbungResponse.success("Application submitted successfully", saved.getId(),
 					saved.getStatus());
