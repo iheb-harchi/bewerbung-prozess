@@ -88,8 +88,7 @@ pipeline {
             archiveArtifacts "target/*.war" // WAR als Download in Jenkins sichern
         }
         failure {
-            slackSend channel: '#build-failures',
-                     message: "❌ Build fehlgeschlagen: ${env.JOB_NAME} #${env.BUILD_NUMBER}"
+            echo "❌ Build fehlgeschlagen: ${env.JOB_NAME} #${env.BUILD_NUMBER}"
         }
     }
 }
