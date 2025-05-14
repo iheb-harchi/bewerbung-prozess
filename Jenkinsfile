@@ -4,7 +4,7 @@ pipeline {
     environment {
         NEXUS_URL = 'http://localhost:8081'
         NEXUS_REPO = 'bewerbung-app'
-        CREDENTIALS_ID = 'nexus-creds'
+        CREDENTIALS_ID = 'nexus'
     }
 
     stages {
