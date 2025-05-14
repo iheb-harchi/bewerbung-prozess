@@ -32,6 +32,24 @@ pipeline {
                 sh 'mvn clean package -DskipTests' // Schneller Build ohne Tests
             }
         }
+        stage('Validate Credentials') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(
+                        credentialsId: 'nexus-credentials',
+                        usernameVariable: 'NEXUS_USER',
+                        passwordVariable: 'NEXUS_PASS'
+                )]) {
+                        sh 'echo "Testing Nexus login..."'
+                        sh """
+                            curl -u ${NEXUS_USER}:${NEXUS_PASS} \
+                            ${NEXUS_URL}/service/rest/v1/repositories \
+                            -H "Accept: application/json"
+                     """
+                    }
+                }
+            }
+        }
 
         // Stage 3: Upload nach Nexus
         stage('Deploy to Nexus') {
