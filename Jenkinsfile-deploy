@@ -1,0 +1,56 @@
+pipeline {
+    agent any
+
+    parameters {
+        string(name: 'VERSION', defaultValue: '', description: 'Version to deploy (from Nexus)')
+    }
+
+    environment {
+        ARTIFACT_ID = 'bewerbung-app'
+        GROUP_PATH = 'com/beispiel/bewerbung-app'
+        NEXUS_URL = 'http://localhost:8081'
+        NEXUS_REPO = 'bewerbung-app'
+        CREDENTIALS_ID = 'nexus'
+
+        WILDFLY_HOME = '/opt/wildfly'
+        DEPLOY_NAME = 'bewerbung-app.war'
+    }
+
+    stages {
+        stage('Download WAR') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: CREDENTIALS_ID,
+                    usernameVariable: 'NEXUS_USER',
+                    passwordVariable: 'NEXUS_PASS'
+                )]) {
+                    script {
+                        def warUrl = "${NEXUS_URL}/repository/${NEXUS_REPO}/${GROUP_PATH}/${params.VERSION}/${ARTIFACT_ID}-${params.VERSION}.war"
+                        echo "⬇️ Lade WAR: ${warUrl}"
+                        sh "curl -u $NEXUS_USER:$NEXUS_PASS -o ${DEPLOY_NAME} ${warUrl}"
+                    }
+                }
+            }
+        }
+
+        stage('Deploy to WildFly') {
+            steps {
+                script {
+                    echo "🚀 Deploying ${DEPLOY_NAME} to WildFly"
+                    sh """
+                        ${WILDFLY_HOME}/bin/jboss-cli.sh --connect <<EOF
+                        undeploy ${DEPLOY_NAME} --force
+                        deploy ${DEPLOY_NAME} --name=${DEPLOY_NAME} --force
+                        EOF
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "✅ Deployment erfolgreich abgeschlossen"
+        }
+    }
+}
