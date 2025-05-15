@@ -143,7 +143,7 @@
     </dependencies>
 
     <build>
-        <finalName>bewerbung-app</finalName>
+    <finalName>${project.artifactId}-${project.version}</finalName>
         <plugins>
             <!-- Compiler plugin -->
             <plugin>
