@@ -11,6 +11,10 @@ pipeline {
         stage('Read Version') {
             steps {
                 script {
+                	env.GROUP_ID = sh(
+                        script: 'mvn help:evaluate -Dexpression=project.groupId -q -DforceStdout',
+                        returnStdout: true
+                    ).trim()
                     env.ARTIFACT_ID = sh(
                         script: 'mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout',
                         returnStdout: true
@@ -36,7 +40,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(
-                        credentialsId: 'nexus',
+                        credentialsId: 'CREDENTIALS_ID',
                         usernameVariable: 'NEXUS_USER',
                         passwordVariable: 'NEXUS_PASS'
                 )]) {
@@ -62,7 +66,7 @@ pipeline {
                         nexusVersion: 'nexus3',
                         protocol: 'http',
                         nexusUrl: NEXUS_URL,
-                        groupId: 'org.mycompany', // Anpassen!
+                        groupId: GROUP_ID, // Anpassen!
                         version: VERSION,
                         repository: NEXUS_REPO,
                         credentialsId: 'nexus',
