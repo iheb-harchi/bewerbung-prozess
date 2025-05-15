@@ -11,8 +11,7 @@ pipeline {
         NEXUS_URL = 'http://localhost:8081'
         NEXUS_REPO = 'bewerbung-app'
         CREDENTIALS_ID = 'nexus'
-
-        WILDFLY_HOME = '/opt/wildfly'
+        WILDFLY_HOME = '/Users/p339442/Documents/Server/wildfly-36.0.0.Final'
         DEPLOY_NAME = 'bewerbung-app.war'
     }
 
