@@ -95,4 +95,12 @@ pipeline {
             echo "❌ Build fehlgeschlagen: ${env.JOB_NAME} #${env.BUILD_NUMBER}"
         }
     }
+    post {
+        success {
+            echo "✅ Build & Upload erfolgreich"
+            build job: 'deploy-to-wildfly', parameters: [
+                string(name: 'VERSION', value: env.VERSION)
+            ]
+        }
+    }
 }
