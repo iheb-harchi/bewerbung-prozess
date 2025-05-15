@@ -7,8 +7,8 @@ pipeline {
 
     environment {
         ARTIFACT_ID = 'bewerbung-app'
-        GROUP_PATH = 'org/mycompany'
-        NEXUS_URL = 'http://localhost:8081'
+	GROUP_PATH = 'org/mycompany/bewerbung-app'
+	NEXUS_URL = 'http://localhost:8081'
         NEXUS_REPO = 'bewerbung-app'
         CREDENTIALS_ID = 'nexus'
 
