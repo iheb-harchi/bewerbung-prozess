@@ -1,0 +1,112 @@
+pipeline {
+    agent any
+
+    environment {
+        NEXUS_URL = 'localhost:8081'
+        CREDENTIALS_ID = 'nexus'
+    }
+
+    stages {
+        stage('Read Version') {
+            steps {
+                script {
+                    env.GROUP_ID = sh(
+                        script: 'mvn help:evaluate -Dexpression=project.groupId -q -DforceStdout',
+                        returnStdout: true
+                    ).trim()
+                    env.ARTIFACT_ID = sh(
+                        script: 'mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout',
+                        returnStdout: true
+                    ).trim()
+                    env.VERSION = sh(
+                        script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout',
+                        returnStdout: true
+                    ).trim()
+
+                    echo "📦 Building ${ARTIFACT_ID}-${VERSION}.war"
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'mvn clean package -DskipTests'
+            }
+        }
+
+        stage('Determine Nexus Repo') {
+            steps {
+                script {
+                    // Git Infos lesen
+                    def branch = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
+                    def isTag = sh(script: "git describe --tags --exact-match || echo ''", returnStdout: true).trim()
+
+                    if (isTag) {
+                        env.NEXUS_REPO = 'bewerbung-releases'
+                        echo "🏷️ Git Tag erkannt → Release-Deployment nach ${env.NEXUS_REPO}"
+                    } else if (branch == "develop" || branch.startsWith("feature/")) {
+                        env.NEXUS_REPO = 'bewerbung-development'
+                        echo "🧪 Branch '${branch}' → Deployment nach ${env.NEXUS_REPO}"
+                    } else {
+                        env.NEXUS_REPO = 'bewerbung-app'
+                        echo "ℹ️ Standard-Deployment nach ${env.NEXUS_REPO}"
+                    }
+                }
+            }
+        }
+
+        stage('Validate Credentials') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(
+                        credentialsId: env.CREDENTIALS_ID,
+                        usernameVariable: 'NEXUS_USER',
+                        passwordVariable: 'NEXUS_PASS'
+                    )]) {
+                        echo '🔐 Validating Nexus credentials...'
+                        sh """
+                            curl -u ${NEXUS_USER}:${NEXUS_PASS} \
+                                 -s -o /dev/null -w "%{http_code}" \
+                                 http://${NEXUS_URL}/service/rest/v1/repositories
+                        """
+                    }
+                }
+            }
+        }
+
+        stage('Deploy to Nexus') {
+            steps {
+                script {
+                    def warFile = "target/${ARTIFACT_ID}-${VERSION}.war"
+
+                    nexusArtifactUploader(
+                        nexusVersion: 'nexus3',
+                        protocol: 'http',
+                        nexusUrl: NEXUS_URL,
+                        groupId: GROUP_ID,
+                        version: VERSION,
+                        repository: NEXUS_REPO,
+                        credentialsId: CREDENTIALS_ID,
+                        artifacts: [[
+                            artifactId: ARTIFACT_ID,
+                            classifier: '',
+                            file: warFile,
+                            type: 'war'
+                        ]]
+                    )
+
+                    echo "✅ ${warFile} erfolgreich nach ${NEXUS_REPO} hochgeladen"
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            archiveArtifacts "target/*.war"
+        }
+        failure {
+            echo "❌ Build fehlgeschlagen: ${env.JOB_NAME} #${env.BUILD_NUMBER}"
+        }
+    }
+}
