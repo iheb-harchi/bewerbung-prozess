@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent { label 'master' }
 
     parameters {
         string(name: 'VERSION', defaultValue: '', description: 'Version to deploy (from Nexus)')
