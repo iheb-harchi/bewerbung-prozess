@@ -40,7 +40,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(
-                        credentialsId: 'CREDENTIALS_ID',
+                        credentialsId: 'nexus',
                         usernameVariable: 'NEXUS_USER',
                         passwordVariable: 'NEXUS_PASS'
                 )]) {
