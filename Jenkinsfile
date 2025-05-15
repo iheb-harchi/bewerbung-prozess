@@ -86,21 +86,17 @@ pipeline {
         }
     }
 
-    // Nachbereitung
     post {
-        success {
-            archiveArtifacts "target/*.war" // WAR als Download in Jenkins sichern
-        }
-        failure {
-            echo "❌ Build fehlgeschlagen: ${env.JOB_NAME} #${env.BUILD_NUMBER}"
-        }
+    success {
+        archiveArtifacts "target/*.war" // WAR als Download in Jenkins sichern
+        echo "✅ Build & Upload erfolgreich"
+        build job: 'deploy-to-wildfly', parameters: [
+            string(name: 'VERSION', value: env.VERSION)
+        ]
     }
-    post {
-        success {
-            echo "✅ Build & Upload erfolgreich"
-            build job: 'deploy-to-wildfly', parameters: [
-                string(name: 'VERSION', value: env.VERSION)
-            ]
-        }
+    failure {
+        echo "❌ Build fehlgeschlagen: ${env.JOB_NAME} #${env.BUILD_NUMBER}"
     }
+}
+
 }
