@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        NEXUS_URL = 'http://localhost:8081'
+        NEXUS_URL = 'localhost:8081'
         NEXUS_REPO = 'bewerbung-app'
         CREDENTIALS_ID = 'nexus'
     }
@@ -47,7 +47,7 @@ pipeline {
                         sh 'echo "Testing Nexus login..."'
                         sh """
                             curl -u ${NEXUS_USER}:${NEXUS_PASS} \
-                            ${NEXUS_URL}/service/rest/v1/repositories \
+                            http://${NEXUS_URL}/service/rest/v1/repositories \
                             -H "Accept: application/json"
                      """
                     }
