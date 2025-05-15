@@ -11,6 +11,7 @@ pipeline {
         NEXUS_URL = 'http://localhost:8081'
         NEXUS_REPO = 'bewerbung-app'
         CREDENTIALS_ID = 'nexus'
+
         WILDFLY_HOME = '/Users/p339442/Documents/Server/wildfly-36.0.0.Final'
         DEPLOY_NAME = 'bewerbung-app.war'
     }
@@ -33,18 +34,51 @@ pipeline {
         }
 
         stage('Deploy to WildFly') {
-            steps {
-                script {
-                    echo "🚀 Deploying ${DEPLOY_NAME} to WildFly"
-                    sh """
-                        ${WILDFLY_HOME}/bin/jboss-cli.sh --connect <<EOF
-                        undeploy ${DEPLOY_NAME} --force
-                        deploy ${DEPLOY_NAME} --name=${DEPLOY_NAME} --force
-                        EOF
-                    """
-                }
-            }
-        }
+		    steps {
+		        script {
+		            echo "🚀 Starting WildFly Deployment..."
+		            
+		            // 1. Prüfe ob WildFly CLI existiert
+		            sh """
+		                if [ ! -f "${WILDFLY_HOME}/bin/jboss-cli.sh" ]; then
+		                    echo "❌ ERROR: WildFly CLI nicht gefunden unter ${WILDFLY_HOME}/bin/jboss-cli.sh"
+		                    exit 1
+		                fi
+		            """
+		            
+		            // 2. Undeploy des alten WARs (falls vorhanden)
+		            sh """
+		                echo "⚙️ Versuche Undeploy..."
+		                ${WILDFLY_HOME}/bin/jboss-cli.sh --connect \
+		                    --command="undeploy ${DEPLOY_NAME} --force" || \
+		                    echo "ℹ️ Kein bestehendes Deployment zum Entfernen"
+		            """
+		            
+		            // 3. Deploy des neuen WARs
+		            sh """
+		                echo "⚙️ Starte Deployment von ${DEPLOY_NAME}..."
+		                ${WILDFLY_HOME}/bin/jboss-cli.sh --connect \
+		                    --command="deploy ${DEPLOY_NAME} --name=${DEPLOY_NAME} --force" || \
+		                    (echo "❌ Deployment fehlgeschlagen"; exit 1)
+		            """
+		            
+		            // 4. Verifikation
+		            sh """
+		                echo "✔️ Verifiziere Deployment..."
+		                DEPLOY_STATUS=\$(${WILDFLY_HOME}/bin/jboss-cli.sh --connect \
+		                    --command="deployment-info --name=${DEPLOY_NAME}")
+		                
+		                echo "Deployment-Status: \$DEPLOY_STATUS"
+		                if [[ ! \$DEPLOY_STATUS == *"OK"* ]]; then
+		                    echo "❌ FEHLER: Deployment-Verifikation fehlgeschlagen"
+		                    exit 1
+		                fi
+		            """
+		            
+		            echo "✅ Erfolgreich deployed: ${DEPLOY_NAME}"
+		        }
+		    }
+		}
     }
 
     post {
